@@ -19,6 +19,7 @@ class MonthCollectionViewCell: UICollectionViewCell {
         monthLabel = UILabel(frame: CGRect(x: 5, y: 10, width: frame.width - 10, height: 20))
         monthLabel.font = UIFont.systemFont(ofSize: 15)
         monthLabel.textAlignment = .center
+        monthLabel.textColor = darkColor.withAlphaComponent(0.5)
         
         super.init(frame: frame)
         
@@ -27,6 +28,7 @@ class MonthCollectionViewCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 3
         contentView.layer.masksToBounds = true
         contentView.layer.borderWidth = 1
+        contentView.layer.borderColor = darkColor.withAlphaComponent(0.2).cgColor
     }
     
     required init?(coder aDecoder: NSCoder) {
