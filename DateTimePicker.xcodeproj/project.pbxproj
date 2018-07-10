@@ -16,6 +16,7 @@
 		DEF7C36B1D8B9EBC0043D9C4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DEF7C36A1D8B9EBC0043D9C4 /* Assets.xcassets */; };
 		DEF7C36E1D8B9EBC0043D9C4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DEF7C36C1D8B9EBC0043D9C4 /* LaunchScreen.storyboard */; };
 		DEF7C37A1D8B9F590043D9C4 /* DateTimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEF7C3791D8B9F590043D9C4 /* DateTimePicker.swift */; };
+		FF57DF6720F4B331007EE1F2 /* MonthCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF57DF6620F4B331007EE1F2 /* MonthCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		DEF7C36D1D8B9EBC0043D9C4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DEF7C36F1D8B9EBC0043D9C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DEF7C3791D8B9F590043D9C4 /* DateTimePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateTimePicker.swift; sourceTree = "<group>"; };
+		FF57DF6620F4B331007EE1F2 /* MonthCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 				DE54880E1D990C36002712DB /* DateCollectionViewCell.swift */,
 				C8BBF8171F91EAA2005D807B /* FullDateCollectionViewCell.swift */,
 				DE58808E1D9A5F2E000C93E3 /* StepCollectionViewFlowLayout.swift */,
+				FF57DF6620F4B331007EE1F2 /* MonthCollectionViewCell.swift */,
 			);
 			path = Source;
 			sourceTree = SOURCE_ROOT;
@@ -111,7 +114,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = ichigo;
 				TargetAttributes = {
 					DEF7C35F1D8B9EBC0043D9C4 = {
@@ -163,6 +166,7 @@
 				DEF7C37A1D8B9F590043D9C4 /* DateTimePicker.swift in Sources */,
 				DEF7C3661D8B9EBC0043D9C4 /* ViewController.swift in Sources */,
 				DEF7C3641D8B9EBC0043D9C4 /* AppDelegate.swift in Sources */,
+				FF57DF6720F4B331007EE1F2 /* MonthCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,12 +205,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -254,12 +260,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
