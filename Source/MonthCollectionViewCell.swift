@@ -19,7 +19,7 @@ class MonthCollectionViewCell: UICollectionViewCell {
         monthLabel = UILabel(frame: CGRect(x: 5, y: 10, width: frame.width - 10, height: 20))
         monthLabel.font = UIFont.systemFont(ofSize: 15)
         monthLabel.textAlignment = .center
-        monthLabel.textColor = darkColor.withAlphaComponent(0.5)
+        monthLabel.textColor = darkColor
         
         super.init(frame: frame)
         
@@ -33,5 +33,13 @@ class MonthCollectionViewCell: UICollectionViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var isSelected: Bool {
+        didSet {
+            monthLabel.textColor = isSelected == true ? .white : darkColor
+            contentView.backgroundColor = isSelected == true ? highlightColor : .white
+            contentView.layer.borderWidth = isSelected == true ? 0 : 1
+        }
     }
 }

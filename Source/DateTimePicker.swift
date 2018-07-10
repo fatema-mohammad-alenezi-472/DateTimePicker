@@ -742,19 +742,23 @@ extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
             collectionView.setContentOffset(offset, animated: true)
         }
         
-        // update selected dates
-        let date = dates[indexPath.item]
-        let dayComponent = calendar.dateComponents([.day, .month, .year], from: date)
-        components.day = dayComponent.day
-        components.month = dayComponent.month
-        components.year = dayComponent.year
-        if let selected = calendar.date(from: components) {
-            if selected.compare(minimumDate) == .orderedAscending {
-                selectedDate = minimumDate
-                resetTime()
-            } else {
-                selectedDate = selected
+        if collectionView == dayCollectionView{
+            // update selected dates
+            let date = dates[indexPath.item]
+            let dayComponent = calendar.dateComponents([.day, .month, .year], from: date)
+            components.day = dayComponent.day
+            components.month = dayComponent.month
+            components.year = dayComponent.year
+            if let selected = calendar.date(from: components) {
+                if selected.compare(minimumDate) == .orderedAscending {
+                    selectedDate = minimumDate
+                    resetTime()
+                } else {
+                    selectedDate = selected
+                }
             }
+        } else if collectionView == monthCollectionView{
+            
         }
     }
     
