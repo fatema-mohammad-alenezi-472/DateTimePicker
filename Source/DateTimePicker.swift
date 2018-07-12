@@ -2,8 +2,6 @@
 //  DateTimePicker.swift
 //  DateTimePicker
 //
-//  Created by Huong Do on 9/16/16.
-//  Copyright © 2016 ichigo. All rights reserved.
 //
 
 import UIKit
@@ -214,8 +212,11 @@ public protocol DateTimePickerDelegate {
     
     @objc open class func show(selected: Date? = nil, minimumDate: Date? = nil, maximumDate: Date? = nil, timeInterval: MinuteInterval = .five) -> DateTimePicker {
         let dateTimePicker = DateTimePicker()
-        dateTimePicker.minimumDate = minimumDate ?? Date(timeIntervalSinceNow: -3600 * 24 * 10)
-        dateTimePicker.maximumDate = maximumDate ?? Date(timeIntervalSinceNow: 3600 * 24 * 10)
+        //        dateTimePicker.minimumDate = minimumDate ?? Date(timeIntervalSinceNow: -3600 * 24 * 10)
+        //        dateTimePicker.maximumDate = maximumDate ?? Date(timeIntervalSinceNow: 3600 * 24 * 10)
+        let currentDate = Date()
+        dateTimePicker.minimumDate = currentDate.startOfMonth()
+        dateTimePicker.maximumDate = currentDate.endOfMonth()
         dateTimePicker.selectedDate = selected ?? dateTimePicker.minimumDate
         dateTimePicker.timeInterval = timeInterval
         assert(dateTimePicker.minimumDate.compare(dateTimePicker.maximumDate) == .orderedAscending, "Minimum date should be earlier than maximum date")
@@ -238,10 +239,7 @@ public protocol DateTimePickerDelegate {
                             width: screenSize.width,
                             height: screenSize.height)
         // shadow view
-        shadowView = UIView(frame: CGRect(x: 0,
-                                          y: 0,
-                                          width: frame.width,
-                                          height: frame.height))
+        shadowView = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
         shadowView.backgroundColor = backgroundViewColor ?? UIColor.black.withAlphaComponent(0.3)
         shadowView.alpha = 1
         let shadowViewTap = UITapGestureRecognizer(target: self, action: #selector(DateTimePicker.dismissView(sender:)))
@@ -250,10 +248,7 @@ public protocol DateTimePickerDelegate {
         
         // content view
         contentHeight = isDatePickerOnly ? 228 : isTimePickerOnly ? 230 : 400
-        contentView = UIView(frame: CGRect(x: 0,
-                                           y: frame.height,
-                                           width: frame.width,
-                                           height: contentHeight))
+        contentView = UIView(frame: CGRect(x: 0, y: frame.height, width: frame.width, height: contentHeight))
         contentView.layer.shadowColor = UIColor(white: 0, alpha: 0.3).cgColor
         contentView.layer.shadowOffset = CGSize(width: 0, height: -2.0)
         contentView.layer.shadowRadius = 1.5
@@ -263,8 +258,7 @@ public protocol DateTimePickerDelegate {
         addSubview(contentView)
         
         // title view
-        let titleView = UIView(frame: CGRect(origin: CGPoint.zero,
-                                             size: CGSize(width: contentView.frame.width, height: 44)))
+        let titleView = UIView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: contentView.frame.width, height: 44)))
         titleView.backgroundColor = .white
         contentView.addSubview(titleView)
         
@@ -315,7 +309,7 @@ public protocol DateTimePickerDelegate {
         let monthInset = (monthCollectionView.frame.width - 75) / 2
         monthCollectionView.contentInset = UIEdgeInsets(top: 0, left: monthInset, bottom: 0, right: monthInset)
         contentView.addSubview(monthCollectionView)
-
+        
         // day collection view
         let layout = StepCollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -480,6 +474,7 @@ public protocol DateTimePickerDelegate {
     @objc
     func setToday() {
         selectedDate = Date()
+        fillDates(fromDate: selectedDate.startOfMonth(), toDate: selectedDate.endOfMonth())
         resetTime()
     }
     
@@ -529,7 +524,7 @@ public protocol DateTimePickerDelegate {
     }
     
     func fillDates(fromDate: Date, toDate: Date) {
-        
+        self.dates.removeAll()
         var dates: [Date] = []
         var days = DateComponents()
         
@@ -707,6 +702,16 @@ extension DateTimePicker: UITableViewDataSource, UITableViewDelegate {
     
 }
 
+extension Date {
+    func startOfMonth() -> Date {
+        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: self)))!
+    }
+    
+    func endOfMonth() -> Date {
+        return Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: self.startOfMonth())!
+    }
+}
+
 extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -751,13 +756,12 @@ extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
             let offset = CGPoint(x: cell.center.x - collectionView.frame.width / 2, y: 0)
             collectionView.setContentOffset(offset, animated: true)
         }
-        
         if collectionView == dayCollectionView{
             // update selected dates
             let date = dates[indexPath.item]
             let dayComponent = calendar.dateComponents([.day, .month, .year], from: date)
             components.day = dayComponent.day
-            components.month = dayComponent.month
+//            components.month = dayComponent.month
             components.year = dayComponent.year
             if let selected = calendar.date(from: components) {
                 if selected.compare(minimumDate) == .orderedAscending {
@@ -768,8 +772,17 @@ extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
                 }
             }
         } else if collectionView == monthCollectionView{
-            
+            var monthComponent = calendar.dateComponents([.day,.month,.year], from: selectedDate)
+            monthComponent.month = indexPath.item + 1
+            if let selected = calendar.date(from: monthComponent) {
+                selectedDate = selected
+                fillDates(fromDate: selected.startOfMonth(), toDate: selected.endOfMonth())
+                minimumDate = selected.startOfMonth()
+                maximumDate  = selected.endOfMonth()
+                resetTime()
+            }
         }
+        
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -799,7 +812,7 @@ extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
                     let date = dates[indexPath.item]
                     let dayComponent = calendar.dateComponents([.day, .month, .year], from: date)
                     components.day = dayComponent.day
-                    components.month = dayComponent.month
+//                    components.month = dayComponent.month
                     components.year = dayComponent.year
                     if let selected = calendar.date(from: components) {
                         if selected.compare(minimumDate) == .orderedAscending {
