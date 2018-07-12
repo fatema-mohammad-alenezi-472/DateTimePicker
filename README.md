@@ -2,7 +2,7 @@
 
 A nicer iOS UI component for picking date and time.
 
-![Screenshot](https://raw.githubusercontent.com/itsmeichigo/DateTimePicker/master/screenshot.png)
+![Screenshot](screenshot.jpg)
 
 ## Features
 
