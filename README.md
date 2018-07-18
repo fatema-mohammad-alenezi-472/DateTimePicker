@@ -12,12 +12,6 @@ A nicer iOS UI component for picking date and time.
 - Inifnite scrolling for time
 - Customize colors and date format
 
-## To-dos (HELP NEEDED! 🎯)
-
-- Picker view as a separate view, to be added in `viewDidLoad`
-- Constraint-based UI
-- Option to select month / year (UI idea needed)
-
 ## Requirements
 
 - Swift 4.0 & xCode 9 
@@ -48,10 +42,6 @@ picker.completionHandler = { date in
     // do something after tapping done
 }
 ```
-
-## Contributing
-
-Contributions for bug fixing or improvements are welcome. Feel free to submit a pull request.
 
 ## Licence
 
