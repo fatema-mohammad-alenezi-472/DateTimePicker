@@ -219,9 +219,6 @@ public protocol DateTimePickerDelegate {
         dateTimePicker.maximumDate = currentDate.endOfMonth()
         dateTimePicker.selectedDate = selected ?? dateTimePicker.minimumDate
         dateTimePicker.timeInterval = timeInterval
-        assert(dateTimePicker.minimumDate.compare(dateTimePicker.maximumDate) == .orderedAscending, "Minimum date should be earlier than maximum date")
-        assert(dateTimePicker.minimumDate.compare(dateTimePicker.selectedDate) != .orderedDescending, "Selected date should be later or equal to minimum date")
-        assert(dateTimePicker.selectedDate.compare(dateTimePicker.maximumDate) != .orderedDescending, "Selected date should be earlier or equal to maximum date")
         
         dateTimePicker.configureView()
         UIApplication.shared.keyWindow?.addSubview(dateTimePicker)
