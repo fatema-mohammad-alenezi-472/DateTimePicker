@@ -42,7 +42,7 @@ public protocol DateTimePickerDelegate {
     public var darkColor = UIColor(red: 0, green: 22.0/255.0, blue: 39.0/255.0, alpha: 1) {
         didSet {
             dateTitleLabel.textColor = darkColor
-            cancelButton.setTitleColor(darkColor.withAlphaComponent(0.5), for: .normal)
+            cancelButton.setTitleColor(darkColor, for: .normal)
             doneButton.backgroundColor = darkColor.withAlphaComponent(0.5)
             borderTopView.backgroundColor = darkColor.withAlphaComponent(0.2)
             borderBottomView.backgroundColor = darkColor.withAlphaComponent(0.2)
@@ -268,7 +268,7 @@ public protocol DateTimePickerDelegate {
         
         cancelButton = UIButton(type: .system)
         cancelButton.setTitle(cancelButtonTitle, for: .normal)
-        cancelButton.setTitleColor(darkColor.withAlphaComponent(0.5), for: .normal)
+        cancelButton.setTitleColor(darkColor, for: .normal)
         cancelButton.contentHorizontalAlignment = .left
         cancelButton.addTarget(self, action: #selector(DateTimePicker.dismissView(sender:)), for: .touchUpInside)
         cancelButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
