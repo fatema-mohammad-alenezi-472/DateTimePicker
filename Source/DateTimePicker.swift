@@ -381,7 +381,7 @@ public protocol DateTimePickerDelegate {
         
         monthCollectionView.layoutIfNeeded()
         let monthInset = (monthCollectionView.frame.width - 75) / 2
-        monthCollectionView.contentInset = UIEdgeInsets(top: 0, left: monthInset, bottom: 0, right: monthInset)
+        monthCollectionView.contentInset = UIEdgeInsets(top: 10, left: monthInset, bottom: 0, right: monthInset)
 
 		
         // day collection view
@@ -411,7 +411,7 @@ public protocol DateTimePickerDelegate {
         dayCollectionView.topAnchor.constraint(equalTo: monthCollectionView.bottomAnchor).isActive = true
         dayCollectionView.leadingAnchor.constraint(equalTo: monthCollectionView.leadingAnchor).isActive = true
         dayCollectionView.trailingAnchor.constraint(equalTo: monthCollectionView.trailingAnchor).isActive = true
-        dayCollectionView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        dayCollectionView.heightAnchor.constraint(equalToConstant: 110).isActive = true
         
         dayCollectionView.layoutIfNeeded()
         let inset = (dayCollectionView.frame.width - 75) / 2
