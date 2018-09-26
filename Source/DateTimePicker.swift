@@ -179,6 +179,7 @@ public protocol DateTimePickerDelegate {
     internal var minuteTableView: UITableView!
     internal var amPmTableView: UITableView!
     internal var dayCollectionView: UICollectionView!
+    internal var monthCollectionView: UICollectionView!
     
     private var shadowView: UIView!
     private var contentView: UIView!
@@ -201,6 +202,7 @@ public protocol DateTimePickerDelegate {
     
     internal var calendar: Calendar = .current
     internal var dates: [Date]! = []
+    internal var months: [String] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
     internal var components: DateComponents! {
         didSet {
             components.timeZone = timeZone
@@ -280,7 +282,7 @@ public protocol DateTimePickerDelegate {
             contentView.removeFromSuperview()
         }
         
-        contentHeight = isDatePickerOnly ? 228 : isTimePickerOnly ? 230 : 330
+        contentHeight = isDatePickerOnly ? 228 : isTimePickerOnly ? 230 : 400
         if let window = UIApplication.shared.keyWindow {
             self.frame.size.width = window.bounds.size.width
         }
@@ -352,6 +354,35 @@ public protocol DateTimePickerDelegate {
         todayButton.trailingAnchor.constraint(equalTo: titleView.layoutMarginsGuide.trailingAnchor, constant: 0).isActive = true
         todayButton.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
         todayButton.leadingAnchor.constraint(equalTo: dateTitleLabel.trailingAnchor).isActive = true
+        
+        // month collection view
+        let monthLayout = StepCollectionViewFlowLayout()
+        monthLayout.scrollDirection = .horizontal
+        monthLayout.minimumInteritemSpacing = 10
+        monthLayout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        monthLayout.itemSize = CGSize(width: 75, height: 40)
+        
+        monthCollectionView = UICollectionView(frame: .zero, collectionViewLayout: monthLayout)
+        
+        monthCollectionView.backgroundColor = daysBackgroundColor
+        monthCollectionView.showsHorizontalScrollIndicator = false
+        monthCollectionView.register(MonthCollectionViewCell.self, forCellWithReuseIdentifier: "monthCell")
+        monthCollectionView.dataSource = self
+        monthCollectionView.delegate = self
+        
+
+        contentView.addSubview(monthCollectionView)
+        
+        monthCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        monthCollectionView.topAnchor.constraint(equalTo: titleView.bottomAnchor).isActive = true
+        monthCollectionView.leadingAnchor.constraint(equalTo: titleView.leadingAnchor).isActive = true
+        monthCollectionView.trailingAnchor.constraint(equalTo: titleView.trailingAnchor).isActive = true
+        monthCollectionView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        monthCollectionView.layoutIfNeeded()
+        let monthInset = (monthCollectionView.frame.width - 75) / 2
+        monthCollectionView.contentInset = UIEdgeInsets(top: 0, left: monthInset, bottom: 0, right: monthInset)
+
 		
         // day collection view
         let layout = StepCollectionViewFlowLayout()
@@ -377,9 +408,9 @@ public protocol DateTimePickerDelegate {
         contentView.addSubview(dayCollectionView)
         
         dayCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        dayCollectionView.topAnchor.constraint(equalTo: titleView.bottomAnchor).isActive = true
-        dayCollectionView.leadingAnchor.constraint(equalTo: titleView.leadingAnchor).isActive = true
-        dayCollectionView.trailingAnchor.constraint(equalTo: titleView.trailingAnchor).isActive = true
+        dayCollectionView.topAnchor.constraint(equalTo: monthCollectionView.bottomAnchor).isActive = true
+        dayCollectionView.leadingAnchor.constraint(equalTo: monthCollectionView.leadingAnchor).isActive = true
+        dayCollectionView.trailingAnchor.constraint(equalTo: monthCollectionView.trailingAnchor).isActive = true
         dayCollectionView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         dayCollectionView.layoutIfNeeded()
@@ -563,6 +594,7 @@ public protocol DateTimePickerDelegate {
     @objc
     func setToday() {
         selectedDate = Date()
+        fillDates(fromDate: selectedDate.startOfMonth(), toDate: selectedDate.endOfMonth())
         resetTime()
     }
     
@@ -650,6 +682,16 @@ public protocol DateTimePickerDelegate {
                 break
             }
         }
+        
+        // udpate month collection view
+        formatter.dateFormat = "MM"
+        let selectedMonth = Int(formatter.string(from: currentDate))! - 1
+        let indexPath = IndexPath(row: selectedMonth, section: 0)
+        monthCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
+            self.monthCollectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+        })
+        
     }
     
     @objc
@@ -770,30 +812,52 @@ extension DateTimePicker: UITableViewDataSource, UITableViewDelegate {
     
 }
 
+extension Date {
+    func startOfMonth() -> Date {
+        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: self)))!
+    }
+    
+    func endOfMonth() -> Date {
+        return Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: self.startOfMonth())!
+    }
+}
+
 extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dates.count
+        if collectionView == dayCollectionView{
+            return dates.count
+        }else if collectionView == monthCollectionView {
+            return months.count
+        }
+        return 0
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if includeMonth {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "dateCell", for: indexPath) as! FullDateCollectionViewCell
-            let date = dates[indexPath.item]
-            cell.populateItem(date: date, highlightColor: highlightColor, darkColor: darkColor, locale: locale)
-
-            return cell
+        if collectionView == dayCollectionView{
+            if includeMonth {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "dateCell", for: indexPath) as! FullDateCollectionViewCell
+                let date = dates[indexPath.item]
+                cell.populateItem(date: date, highlightColor: highlightColor, darkColor: darkColor, locale: locale)
+                
+                return cell
+            }
+            else {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "dateCell", for: indexPath) as! DateCollectionViewCell
+                let date = dates[indexPath.item]
+                cell.populateItem(date: date, highlightColor: highlightColor, darkColor: darkColor, locale: locale)
+                
+                return cell
+            }
         }
-        else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "dateCell", for: indexPath) as! DateCollectionViewCell
-            let date = dates[indexPath.item]
-            cell.populateItem(date: date, highlightColor: highlightColor, darkColor: darkColor, locale: locale)
-
-            return cell
-        }
+        
+        // show month collection view
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "monthCell", for: indexPath) as! MonthCollectionViewCell
+        cell.monthLabel.text = months[indexPath.item]
+        return cell
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -802,21 +866,33 @@ extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
             let offset = CGPoint(x: cell.center.x - collectionView.frame.width / 2, y: 0)
             collectionView.setContentOffset(offset, animated: true)
         }
-        
-        // update selected dates
-        let date = dates[indexPath.item]
-        let dayComponent = calendar.dateComponents([.day, .month, .year], from: date)
-        components.day = dayComponent.day
-        components.month = dayComponent.month
-        components.year = dayComponent.year
-        if let selected = calendar.date(from: components) {
-            if selected.compare(minimumDate) == .orderedAscending {
-                selectedDate = minimumDate
-                resetTime()
-            } else {
+        if collectionView == dayCollectionView{
+            // update selected dates
+            let date = dates[indexPath.item]
+            let dayComponent = calendar.dateComponents([.day, .month, .year], from: date)
+            components.day = dayComponent.day
+            components.month = dayComponent.month
+            components.year = dayComponent.year
+            if let selected = calendar.date(from: components) {
+                if selected.compare(minimumDate) == .orderedAscending {
+                    selectedDate = minimumDate
+                    resetTime()
+                } else {
+                    selectedDate = selected
+                }
+            }
+        } else if collectionView == monthCollectionView{
+            var monthComponent = calendar.dateComponents([.day,.month,.year], from: selectedDate)
+            monthComponent.month = indexPath.item + 1
+            if let selected = calendar.date(from: monthComponent) {
                 selectedDate = selected
+                fillDates(fromDate: selected.startOfMonth(), toDate: selected.endOfMonth())
+                minimumDate = selected.startOfMonth()
+                maximumDate  = selected.endOfMonth()
+                resetTime()
             }
         }
+        
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -831,30 +907,34 @@ extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func alignScrollView(_ scrollView: UIScrollView) {
         if let collectionView = scrollView as? UICollectionView {
-            let centerPoint = CGPoint(x: collectionView.center.x + collectionView.contentOffset.x, y: 50);
-            if let indexPath = collectionView.indexPathForItem(at: centerPoint) {
-                // automatically select this item and center it to the screen
-                // set animated = false to avoid unwanted effects
-                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .top)
-                if let cell = collectionView.cellForItem(at: indexPath) {
-                    let offset = CGPoint(x: cell.center.x - collectionView.frame.width / 2, y: 0)
-                    collectionView.setContentOffset(offset, animated: false)
-                }
-                
-                // update selected date
-                let date = dates[indexPath.item]
-                let dayComponent = calendar.dateComponents([.day, .month, .year], from: date)
-                components.day = dayComponent.day
-                components.month = dayComponent.month
-                components.year = dayComponent.year
-                if let selected = calendar.date(from: components) {
-                    if selected.compare(minimumDate) == .orderedAscending {
-                        selectedDate = minimumDate
-                        resetTime()
-                    } else {
-                        selectedDate = selected
+            if collectionView == dayCollectionView{
+                let centerPoint = CGPoint(x: collectionView.center.x + collectionView.contentOffset.x, y: 50);
+                if let indexPath = collectionView.indexPathForItem(at: centerPoint) {
+                    // automatically select this item and center it to the screen
+                    // set animated = false to avoid unwanted effects
+                    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .top)
+                    if let cell = collectionView.cellForItem(at: indexPath) {
+                        let offset = CGPoint(x: cell.center.x - collectionView.frame.width / 2, y: 0)
+                        collectionView.setContentOffset(offset, animated: false)
+                    }
+                    
+                    // update selected date
+                    let date = dates[indexPath.item]
+                    let dayComponent = calendar.dateComponents([.day, .month, .year], from: date)
+                    components.day = dayComponent.day
+                    components.month = dayComponent.month
+                    components.year = dayComponent.year
+                    if let selected = calendar.date(from: components) {
+                        if selected.compare(minimumDate) == .orderedAscending {
+                            selectedDate = minimumDate
+                            resetTime()
+                        } else {
+                            selectedDate = selected
+                        }
                     }
                 }
+            } else if collectionView == monthCollectionView {
+                //TODO: do requried operation
             }
         } else if let tableView = scrollView as? UITableView {
             
