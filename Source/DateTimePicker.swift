@@ -885,10 +885,10 @@ extension DateTimePicker: UICollectionViewDataSource, UICollectionViewDelegate {
             var monthComponent = calendar.dateComponents([.day,.month,.year], from: selectedDate)
             monthComponent.month = indexPath.item + 1
             if let selected = calendar.date(from: monthComponent) {
-                selectedDate = selected
-                fillDates(fromDate: selected.startOfMonth(), toDate: selected.endOfMonth())
                 minimumDate = selected.startOfMonth()
                 maximumDate  = selected.endOfMonth()
+                selectedDate = selected
+                fillDates(fromDate: selected.startOfMonth(), toDate: selected.endOfMonth())
                 resetTime()
             }
         }
